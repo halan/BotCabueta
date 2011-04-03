@@ -1,0 +1,8 @@
+--- 
+irc:
+  server: irc.freenode.org
+  nick: BotCabueta
+  channel: '#cinch-bots'
+twitter:
+  :consumer_key: YOUR TWITTER KEY
+  :consumer_secret: YOUR TWITTER SECRET
