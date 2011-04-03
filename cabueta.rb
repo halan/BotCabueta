@@ -65,6 +65,15 @@ class TwitterPlugin
     nil
   end
 
+  timer 60*30, method: :followme
+  def followme
+    Channel(Config::get['irc']['channel']).send "Me siga em: http://twitter.com/#{@@twitter.info['screen_name']}"
+  rescue
+    nil
+  end
+
+
+
   def last_tweet
     if @last_id
       last_tweets = @@twitter.friends_timeline :since_id => @last_id, :include_rts => true, :count => 1
