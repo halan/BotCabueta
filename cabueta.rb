@@ -46,7 +46,7 @@ end
 
 class TwitterPlugin
   include Cinch::Plugin
-  attr_accessor :last_id
+  attr_accessor :timeline, :last_id
 
   timer 5, method: :show_tweet
   def show_tweet
@@ -72,22 +72,24 @@ class TwitterPlugin
     nil
   end
 
+  def load_timeline
+    @timeline ||= []
 
+    if @last_id
+      @timeline = @@twitter.friends_timeline(:since_id => @last_id, :include_rts => true) + @timeline
+    else
+      @timeline = @@twitter.friends_timeline(:include_rts => true) + @timeline
+    end
+  end
 
   def last_tweet
-    if @last_id
-      last_tweets = @@twitter.friends_timeline :since_id => @last_id, :include_rts => true, :count => 1
-    else
-      last_tweets = @@twitter.friends_timeline :include_rts => true, :count => 1
-    end
+    load_timeline if not @timeline or @timeline.empty?
 
-    if last_tweets.any?
-      tweet = last_tweets.first
-      @last_id = tweet['id_str']
-      return tweet
-    else
-      return nil
-    end
+    tweet = @timeline.last
+    @last_id = tweet['id_str']
+    @timeline.delete tweet
+
+    return tweet
   rescue
     nil
   end
