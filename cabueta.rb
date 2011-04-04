@@ -48,7 +48,7 @@ class TwitterPlugin
   include Cinch::Plugin
   attr_accessor :timeline, :last_id
 
-  timer 5, method: :show_tweet
+  timer 10, method: :show_tweet
   def show_tweet
     tweet = last_tweet
     if tweet and tweet['user']['screen_name'] != @@twitter.info['screen_name']
@@ -58,14 +58,14 @@ class TwitterPlugin
     nil
   end
 
-  timer 60*60, method: :about
+  timer 60*40, method: :about
   def about
     Channel(Config::get['irc']['channel']).send @@twitter.info['description']
   rescue
     nil
   end
 
-  timer 60*30, method: :followme
+  timer 60*20, method: :followme
   def followme
     Channel(Config::get['irc']['channel']).send "Me siga em: http://twitter.com/#{@@twitter.info['screen_name']}"
   rescue
@@ -78,7 +78,7 @@ class TwitterPlugin
     if @last_id
       @timeline = @@twitter.friends_timeline(:since_id => @last_id, :include_rts => true) + @timeline
     else
-      @timeline = @@twitter.friends_timeline(:include_rts => true) + @timeline
+      @timeline = @@twitter.friends_timeline(:include_rts => true, :count => 1) + @timeline
     end
   end
 
