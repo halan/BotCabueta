@@ -48,8 +48,12 @@ class TwitterPlugin
   include Cinch::Plugin
   attr_accessor :timeline, :last_id
 
-  timer 10, method: :show_tweet
-  def show_tweet
+  @@quietance = 80
+
+  timer 10, method: :live_timeline
+  def live_timeline
+    return if rand(100) < @@quietance
+
     tweet = last_tweet
     if tweet and tweet['user']['screen_name'] != @@twitter.info['screen_name']
       Channel(Config::get['irc']['channel']).send "@#{tweet['user']['screen_name']}: #{tweet['text']}" if tweet
